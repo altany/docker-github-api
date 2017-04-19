@@ -1,0 +1,18 @@
+{
+  "name": "github-api-docker",
+  "version": "1.0.0",
+  "description": "Docker image that exposes the Github API for tany4",
+  "author": "Tania Papazafeiropoulou <hello@tany4.com>",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.13.3",
+    "marked": "^0.3.6",
+    "node-time-ago": "^1.0.0",
+    "request-extensible": "^0.1.1",
+    "request-http-cache": "^1.0.1"
+
+  }
+}
