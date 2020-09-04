@@ -1,6 +1,7 @@
 'use strict';
 
 const express = require('express');
+const path = require('path');
 
 // Constants
 const PORT = process.env.PORT || 8080;
@@ -23,10 +24,11 @@ let clientID = process.env.GITHUB_CLIENTID || '';
 let clientSecret = process.env.GITHUB_SECRET || '';
 
 let host = 'https://api.github.com/';
-let auth = 'client_id=' + clientID + '&client_secret=' + clientSecret
+let auth = new Buffer(`${clientID}:${clientSecret}`).toString('base64')
 let options = {
   headers: {
-    'User-Agent': 'altany'
+    'User-Agent': 'altany',
+    'Authorization': 'Basic ' + auth
   }
 };
 
@@ -55,11 +57,11 @@ function formatErrorResponse({ response, message = '', repo, code=500, contentTy
 // App
 const app = express();
 app.get('/', function (req, res) {
-  res.send('Hello world\n');
+  res.sendFile(path.join(__dirname + '/welcome.html'));
 });
 
 app.get('/repos', function(req, res) {
-  options.url = host + 'users/altany/repos?sort=created&' + auth;
+  options.url = `${host}users/altany/repos?sort=created`
   request(options, function (error, response, body) {
     if (error) {
       return formatErrorResponse({response: res, message: error});
@@ -73,7 +75,7 @@ app.get('/repos', function(req, res) {
 });
 
 app.get('/readme/:repo', function(req, res) {
-  options.url = host + 'repos/altany/' + req.params.repo + '/contents/README.md?' + auth;
+  options.url = `${host}repos/altany/${req.params.repo}/contents/README.md`;
   options.headers['Accept'] = 'application/vnd.github.' + apiVersion + '.raw';
   request(options, function (error, response, body) {
     if (error) {
@@ -93,7 +95,7 @@ app.get('/readme/:repo', function(req, res) {
 });
 
 app.get('/last-commit/:repo', function(req, res) {
-  options.url = host + 'repos/altany/' + req.params.repo + '/commits?' + auth;
+  options.url = `${host}repos/altany/${req.params.repo}/commits`;
   request(options, function (error, response, body) {
     if (error) {
       return formatErrorResponse({response: res, message: error, repo: req.params.repo});
