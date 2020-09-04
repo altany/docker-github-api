@@ -2,6 +2,7 @@
 
 const express = require('express');
 const path = require('path');
+const cors = require('cors')
 
 // Constants
 const PORT = process.env.PORT || 8080;
@@ -56,6 +57,8 @@ function formatErrorResponse({ response, message = '', repo, code=500, contentTy
 
 // App
 const app = express();
+app.use(cors())
+
 app.get('/', function (req, res) {
   res.sendFile(path.join(__dirname + '/welcome.html'));
 });
