@@ -3,7 +3,7 @@
 const express = require('express');
 
 // Constants
-const PORT = 8080;
+const PORT = process.env.PORT || 8080;
 
 let requestExt = require('request-extensible');
 let RequestHttpCache = require('request-http-cache');

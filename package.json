@@ -4,6 +4,7 @@
   "description": "Docker image that exposes the Github API for tany4",
   "author": "Tania Papazafeiropoulou <hello@tany4.com>",
   "main": "server.js",
+  "license": "MIT",
   "scripts": {
     "start": "node server.js"
   },
@@ -13,6 +14,5 @@
     "node-time-ago": "^1.0.0",
     "request-extensible": "^0.1.1",
     "request-http-cache": "^1.0.1"
-
   }
 }
