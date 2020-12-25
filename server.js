@@ -7,32 +7,31 @@ const cors = require("cors");
 // Constants
 const PORT = process.env.PORT || 8080;
 
-let requestExt = require("request-extensible");
-let RequestHttpCache = require("request-http-cache");
+const requestExt = require("request-extensible");
+const RequestHttpCache = require("request-http-cache");
 
-let httpRequestCache = new RequestHttpCache({
+const httpRequestCache = new RequestHttpCache({
   max: 10 * 1024 * 1024, // Maximum cache size (1mb) defaults to 512Kb
   ttl: 7200,
 });
 
-let request = requestExt({
+const request = requestExt({
   extensions: [httpRequestCache.extension],
 });
 
-let clientID = process.env.GITHUB_CLIENTID || "";
-let clientSecret = process.env.GITHUB_SECRET || "";
+const clientID = process.env.GITHUB_CLIENTID || "";
+const clientSecret = process.env.GITHUB_SECRET || "";
 
-let host = "https://api.github.com/";
+const host = "https://api.github.com/";
 const repo = "altany";
-
-let auth = new Buffer(`${clientID}:${clientSecret}`).toString("base64");
-let apiVersion = "v3";
+const auth = new Buffer(`${clientID}:${clientSecret}`).toString("base64");
+const apiVersion = "v3";
 
 let options = {
   headers: {
     "User-Agent": repo,
-    Authorization: "Basic " + auth,
-    Accept: "application/vnd.github." + apiVersion + ".raw+json",
+    Authorization: `Basic ${auth}`,
+    Accept: `application/vnd.github.${apiVersion}.raw+json`,
   },
 };
 
