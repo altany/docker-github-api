@@ -14,6 +14,6 @@
     "marked": "^0.3.6",
     "node-time-ago": "^1.0.0",
     "request-extensible": "^0.1.1",
-    "request-http-cache": "^1.0.1"
+    "request-http-cache": "^1.1.0"
   }
 }
