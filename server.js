@@ -26,14 +26,15 @@ let host = "https://api.github.com/";
 const repo = "altany";
 
 let auth = new Buffer(`${clientID}:${clientSecret}`).toString("base64");
+let apiVersion = "v3";
+
 let options = {
   headers: {
     "User-Agent": repo,
     Authorization: "Basic " + auth,
+    Accept: "application/vnd.github." + apiVersion + ".raw+json",
   },
 };
-
-let apiVersion = "v3";
 
 let marked = require("marked");
 let timeAgo = require("node-time-ago");
@@ -89,7 +90,6 @@ app.get("/repos", function (req, res) {
 
 app.get("/readme/:repo", function (req, res) {
   options.url = `${host}repos/${repo}/${req.params.repo}/contents/README.md`;
-  options.headers["Accept"] = "application/vnd.github." + apiVersion + ".raw";
   request(options, function (error, response, body) {
     if (error) {
       return formatErrorResponse({
@@ -156,6 +156,38 @@ app.get("/last-commit/:repo", function (req, res) {
     }
     res.setHeader("Content-Type", "application/json");
     res.end(JSON.stringify(result));
+  });
+});
+
+app.get("/languages/:repo", function (req, res) {
+  options.url = `${host}repos/${repo}/${req.params.repo}/languages`;
+  request(options, function (error, response, body) {
+    if (error) {
+      return formatErrorResponse({
+        response: res,
+        message: error,
+        repo: req.params.repo,
+      });
+    }
+    if (response.statusCode === 404) {
+      return formatErrorResponse({
+        response: res,
+        message: "languages not found",
+        repo: req.params.repo,
+        code: 404,
+      });
+    } else if (response.statusCode !== 200) {
+      return formatErrorResponse({
+        response: res,
+        message: response.body,
+        repo: req.params.repo,
+        code: response.statusCode,
+        contentType: "text/html",
+      });
+    } else {
+      res.setHeader("Content-Type", "application/json");
+      res.end(body);
+    }
   });
 });
 
