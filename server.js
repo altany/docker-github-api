@@ -24,7 +24,7 @@ const clientSecret = process.env.GITHUB_SECRET || "";
 
 const host = "https://api.github.com/";
 const owner = "altany";
-const auth = new Buffer(`${clientID}:${clientSecret}`).toString("base64");
+const auth = Buffer.from(`${clientID}:${clientSecret}`).toString("base64");
 const apiVersion = "v3";
 
 let options = {
@@ -49,29 +49,29 @@ marked.setOptions({
   smartypants: false,
 });
 
-function formatErrorResponse({
+const formatErrorResponse = ({
   response,
   message = "",
   repo,
   code = 500,
   contentType = "text/plain",
-} = {}) {
+} = {}) => {
   response.statusCode = code;
   response.setHeader("Content-Type", contentType);
   return response.end(message + (repo ? ' for repo "' + repo + '"' : ""));
-}
+};
 
 // App
 const app = express();
 app.use(cors());
 
-app.get("/", function (req, res) {
+app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname + "/welcome.html"));
 });
 
-app.get("/repos", function (req, res) {
+app.get("/repos", (req, res) => {
   options.url = `${host}users/${owner}/repos?sort=created`;
-  request(options, function (error, response, body) {
+  request(options, (error, response, body) => {
     if (error) {
       return formatErrorResponse({ response: res, message: error });
     } else if (response.statusCode !== 200) {
@@ -87,9 +87,9 @@ app.get("/repos", function (req, res) {
   });
 });
 
-app.get("/readme/:repo", function (req, res) {
+app.get("/readme/:repo", (req, res) => {
   options.url = `${host}repos/${owner}/${req.params.repo}/contents/README.md`;
-  request(options, function (error, response, body) {
+  request(options, (error, response, body) => {
     if (error) {
       return formatErrorResponse({
         response: res,
@@ -119,9 +119,9 @@ app.get("/readme/:repo", function (req, res) {
   });
 });
 
-app.get("/last-commit/:repo", function (req, res) {
+app.get("/last-commit/:repo", (req, res) => {
   options.url = `${host}repos/${owner}/${req.params.repo}/commits`;
-  request(options, function (error, response, body) {
+  request(options, (error, response, body) => {
     if (error) {
       return formatErrorResponse({
         response: res,
@@ -158,9 +158,9 @@ app.get("/last-commit/:repo", function (req, res) {
   });
 });
 
-app.get("/languages/:repo", function (req, res) {
+app.get("/languages/:repo", (req, res) => {
   options.url = `${host}repos/${owner}/${req.params.repo}/languages`;
-  request(options, function (error, response, body) {
+  request(options, (error, response, body) => {
     if (error) {
       return formatErrorResponse({
         response: res,
@@ -190,12 +190,13 @@ app.get("/languages/:repo", function (req, res) {
   });
 });
 
-app.use(function (req, res, next) {
+
+app.use((req, res, next) => {
   let err = new Error("Not Found");
   err.status = 404;
   next(err);
 });
-app.use(function (err, req, res, next) {
+app.use((err, req, res, next) => {
   res.sendStatus(err.status || 500);
 });
 
