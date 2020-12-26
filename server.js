@@ -234,10 +234,18 @@ app.get("/languages", (req, res) => {
       return Promise.all(
         JSON.parse(repos).map((repo) => getRepoLanguages(repo.name, res))
       )
-        .then((data) => {
-          const languages = data.map((languages) => JSON.parse(languages));
+        .then((languageSets) => {
+          const languageObjects = languageSets.map((set) => JSON.parse(set));
+          const languageData = sumObjectsByKeys(...languageObjects);
+          const responseData = Object.entries(languageData).map(
+            ([key, value]) => ({
+              language: key,
+              value,
+            })
+          );
+
           res.setHeader("Content-Type", "application/json");
-          res.send(sumObjectsByKeys(...languages));
+          res.send(responseData);
         })
         .catch((error) => error);
     })
