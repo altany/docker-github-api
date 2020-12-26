@@ -60,7 +60,17 @@ const formatErrorResponse = ({
   return response.end(message + (repo ? ' for repo "' + repo + '"' : ""));
 };
 
-const getRepos = () => {
+const sumObjectsByKeys = (...objects) =>
+  objects.reduce((object1, object2) => {
+    for (let property in object2) {
+      if (object2.hasOwnProperty(property))
+        object1[property] = (object1[property] || 0) + object2[property];
+    }
+    return object1;
+  }, {});
+
+const getRepos = (res) => {
+  console.log("Getting all repos");
   return new Promise((resolve, reject) => {
     options.url = `${HOST}users/${OWNER}/repos?sort=created`;
     request(options, (error, response, body) => {
@@ -81,7 +91,8 @@ const getRepos = () => {
   });
 };
 
-const getRepoLanguages = (repo) => {
+const getRepoLanguages = (repo, res) => {
+  console.log(`Getting languages for repo ${repo}`);
   return new Promise((resolve, reject) => {
     options.url = `${HOST}repos/${OWNER}/${repo}/languages`;
     request(options, (error, response, body) => {
@@ -90,7 +101,7 @@ const getRepoLanguages = (repo) => {
           formatErrorResponse({
             response: res,
             message: error,
-            repo: req.params.repo,
+            repo: repo,
           })
         );
       }
@@ -99,7 +110,7 @@ const getRepoLanguages = (repo) => {
           formatErrorResponse({
             response: res,
             message: "languages not found",
-            repo: req.params.repo,
+            repo: repo,
             code: 404,
           })
         );
@@ -108,7 +119,7 @@ const getRepoLanguages = (repo) => {
           formatErrorResponse({
             response: res,
             message: response.body,
-            repo: req.params.repo,
+            repo: repo,
             code: response.statusCode,
             contentType: "text/html",
           })
@@ -129,7 +140,7 @@ app.get("/", (req, res) => {
 });
 
 app.get("/repos", (req, res) => {
-  getRepos()
+  getRepos(res)
     .then((response) => {
       res.setHeader("Content-Type", "application/json");
       res.send(response);
@@ -209,20 +220,29 @@ app.get("/last-commit/:repo", (req, res) => {
 });
 
 app.get("/languages/:repo", (req, res) => {
-  getRepoLanguages(req.params.repo)
+  getRepoLanguages(req.params.repo, res)
     .then((response) => {
       res.setHeader("Content-Type", "application/json");
       res.send(response);
     })
     .catch((error) => error);
 });
-    } else {
-      res.setHeader("Content-Type", "application/json");
-      res.end(body);
-    }
-  });
-});
 
+app.get("/languages", (req, res) => {
+  return getRepos(res)
+    .then((repos) => {
+      return Promise.all(
+        JSON.parse(repos).map((repo) => getRepoLanguages(repo.name, res))
+      )
+        .then((data) => {
+          const languages = data.map((languages) => JSON.parse(languages));
+          res.setHeader("Content-Type", "application/json");
+          res.send(sumObjectsByKeys(...languages));
+        })
+        .catch((error) => error);
+    })
+    .catch((error) => error);
+});
 
 app.use((req, res, next) => {
   let err = new Error("Not Found");
