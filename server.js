@@ -19,19 +19,21 @@ const request = requestExt({
   extensions: [httpRequestCache.extension],
 });
 
-const clientID = process.env.GITHUB_CLIENTID || "";
-const clientSecret = process.env.GITHUB_SECRET || "";
+const CLIENT_ID = process.env.GITHUB_CLIENTID || "";
+const CLIENT_SECRET = process.env.GITHUB_SECRET || "";
 
-const host = "https://api.github.com/";
-const owner = "altany";
-const auth = Buffer.from(`${clientID}:${clientSecret}`).toString("base64");
-const apiVersion = "v3";
+const HOST = "https://api.github.com/";
+const OWNER = "altany";
+const AUTHORISATION = Buffer.from(`${CLIENT_ID}:${CLIENT_SECRET}`).toString(
+  "base64"
+);
+const API_VERSION = "v3";
 
 let options = {
   headers: {
-    "User-Agent": owner,
-    Authorization: `Basic ${auth}`,
-    Accept: `application/vnd.github.${apiVersion}.raw+json`,
+    "User-Agent": OWNER,
+    Authorization: `Basic ${AUTHORISATION}`,
+    Accept: `application/vnd.github.${API_VERSION}.raw+json`,
   },
 };
 
@@ -70,7 +72,7 @@ app.get("/", (req, res) => {
 });
 
 app.get("/repos", (req, res) => {
-  options.url = `${host}users/${owner}/repos?sort=created`;
+  options.url = `${HOST}users/${OWNER}/repos?sort=created`;
   request(options, (error, response, body) => {
     if (error) {
       return formatErrorResponse({ response: res, message: error });
@@ -88,7 +90,7 @@ app.get("/repos", (req, res) => {
 });
 
 app.get("/readme/:repo", (req, res) => {
-  options.url = `${host}repos/${owner}/${req.params.repo}/contents/README.md`;
+  options.url = `${HOST}repos/${OWNER}/${req.params.repo}/contents/README.md`;
   request(options, (error, response, body) => {
     if (error) {
       return formatErrorResponse({
@@ -120,7 +122,7 @@ app.get("/readme/:repo", (req, res) => {
 });
 
 app.get("/last-commit/:repo", (req, res) => {
-  options.url = `${host}repos/${owner}/${req.params.repo}/commits`;
+  options.url = `${HOST}repos/${OWNER}/${req.params.repo}/commits`;
   request(options, (error, response, body) => {
     if (error) {
       return formatErrorResponse({
@@ -159,7 +161,7 @@ app.get("/last-commit/:repo", (req, res) => {
 });
 
 app.get("/languages/:repo", (req, res) => {
-  options.url = `${host}repos/${owner}/${req.params.repo}/languages`;
+  options.url = `${HOST}repos/${OWNER}/${req.params.repo}/languages`;
   request(options, (error, response, body) => {
     if (error) {
       return formatErrorResponse({
