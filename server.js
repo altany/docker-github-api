@@ -23,13 +23,13 @@ const clientID = process.env.GITHUB_CLIENTID || "";
 const clientSecret = process.env.GITHUB_SECRET || "";
 
 const host = "https://api.github.com/";
-const repo = "altany";
+const owner = "altany";
 const auth = new Buffer(`${clientID}:${clientSecret}`).toString("base64");
 const apiVersion = "v3";
 
 let options = {
   headers: {
-    "User-Agent": repo,
+    "User-Agent": owner,
     Authorization: `Basic ${auth}`,
     Accept: `application/vnd.github.${apiVersion}.raw+json`,
   },
@@ -70,7 +70,7 @@ app.get("/", function (req, res) {
 });
 
 app.get("/repos", function (req, res) {
-  options.url = `${host}users/${repo}/repos?sort=created`;
+  options.url = `${host}users/${owner}/repos?sort=created`;
   request(options, function (error, response, body) {
     if (error) {
       return formatErrorResponse({ response: res, message: error });
@@ -88,7 +88,7 @@ app.get("/repos", function (req, res) {
 });
 
 app.get("/readme/:repo", function (req, res) {
-  options.url = `${host}repos/${repo}/${req.params.repo}/contents/README.md`;
+  options.url = `${host}repos/${owner}/${req.params.repo}/contents/README.md`;
   request(options, function (error, response, body) {
     if (error) {
       return formatErrorResponse({
@@ -120,7 +120,7 @@ app.get("/readme/:repo", function (req, res) {
 });
 
 app.get("/last-commit/:repo", function (req, res) {
-  options.url = `${host}repos/${repo}/${req.params.repo}/commits`;
+  options.url = `${host}repos/${owner}/${req.params.repo}/commits`;
   request(options, function (error, response, body) {
     if (error) {
       return formatErrorResponse({
@@ -159,7 +159,7 @@ app.get("/last-commit/:repo", function (req, res) {
 });
 
 app.get("/languages/:repo", function (req, res) {
-  options.url = `${host}repos/${repo}/${req.params.repo}/languages`;
+  options.url = `${host}repos/${owner}/${req.params.repo}/languages`;
   request(options, function (error, response, body) {
     if (error) {
       return formatErrorResponse({
