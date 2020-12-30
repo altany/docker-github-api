@@ -69,6 +69,15 @@ const sumObjectsByKeys = (...objects) =>
     return object1;
   }, {});
 
+Object.prototype.hasOwnPropertyCaseInsensitive = function (value) {
+  for (var prop in this) {
+    if (prop.toLowerCase() === value.toLowerCase()) {
+      return true;
+    }
+  }
+  return false;
+};
+
 const getRepos = (res) => {
   console.log("Getting all repos");
   return new Promise((resolve, reject) => {
@@ -246,6 +255,30 @@ app.get("/languages", (req, res) => {
 
           res.setHeader("Content-Type", "application/json");
           res.send(responseData);
+        })
+        .catch((error) => error);
+    })
+    .catch((error) => error);
+});
+
+app.get("/repos/language/:language", (req, res) => {
+  return getRepos(res)
+    .then((repos) => {
+      return Promise.all(
+        JSON.parse(repos).map(async (repo) => ({
+          repo: repo.name,
+          languages: JSON.parse(await getRepoLanguages(repo.name, res)),
+        }))
+      )
+        .then((repoLanguages) => {
+          const repos = repoLanguages
+            .filter((element) => {
+              return element.languages.hasOwnPropertyCaseInsensitive(
+                req.params.language
+              );
+            })
+            .map((element) => element.repo);
+          res.send(repos);
         })
         .catch((error) => error);
     })
