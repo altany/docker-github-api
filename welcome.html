@@ -12,8 +12,14 @@
 
     <div class="container">
         <h1>Welcome to altany's Github API</h1>
-        <h3>To test the API you can click <a href="repos">this URL</a> to view a list of repos</h3>
-        <p>Head off to <a href="http://tany4.com/github">tany4</a> to see the API in action</p>
+        <p>Check the various endpoints below:</p>
+        <h3><a href="repos">/repos</a>: get a list of all repos</h3>
+        <h3><a href="/readme/tany4">/readme/:repo</a>: get readme content of given repo</h3>
+        <h3><a href="/last-commit/tany4">/last-commit/:repo</a>: get last commit info of given repo</h3>
+        <h3><a href="/languages">/languages</a>: get languages for all altany repos</h3>
+        <h3><a href="/languages/tany4">/languages/:repo</a>: get language of given repo</h3>
+        <h3><a href="repos/language/javascript">/repos/language/:language</a>: get all repos with given language</h3>
+        <p>Head off to <a href="http://tany4.com/work">tany4</a> to see the API in action</p>
     </div>
 
 </body>
