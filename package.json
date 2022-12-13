@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "cors": "^2.8.5",
-    "express": "^4.13.3",
+    "express": "^4.17.3",
     "marked": "^1.2.7",
     "node-time-ago": "^1.0.0",
     "request-extensible": "^0.1.1",
